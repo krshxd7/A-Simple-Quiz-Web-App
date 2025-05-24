@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz with Palette & Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    nav {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .timer {
+      font-weight: bold;
+    }
+
+    h1 {
+      color: #34495e;
+      text-align: center;
+    }
+
+    form {
+      background: white;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    p {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .palette {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .palette div {
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+      text-align: center;
+      border-radius: 5px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+
+    .attempted {
+      background-color: #27ae60; /* Green */
+    }
+
+    .unattempted {
+      background-color: #e74c3c; /* Red */
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #result {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div>Legend: 🟥 Not Answered | 🟩 Answered</div>
+  <div class="timer" id="timer">Time Left: 20:00</div>
+</nav>
+
+<h1>India General Quiz</h1>
+
+<form id="quizForm">
+  <p>Q1. What is the capital of India?</p>
+  <input type="radio" name="ans1" value="Dhaka"> Dhaka<br>
+  <input type="radio" name="ans1" value="New Delhi"> New Delhi<br>
+  <input type="radio" name="ans1" value="Bangkok"> Bangkok<br><br>
+
+  <p>Q2. What is the national sport of India?</p>
+  <input type="radio" name="ans2" value="Cricket"> Cricket<br>
+  <input type="radio" name="ans2" value="Hockey"> Hockey<br>
+  <input type="radio" name="ans2" value="Lagori"> Lagori<br><br>
+
+  <p>Q3. What's the national animal?</p>
+  <input type="radio" name="ans3" value="Bengal Tiger"> Bengal Tiger<br>
+  <input type="radio" name="ans3" value="Asiatic Lion"> Asiatic Lion<br>
+  <input type="radio" name="ans3" value="Pink Dolphin"> Pink Dolphin<br><br>
+
+  <p>Q4. Current Prime Minister of India is?</p>
+  <input type="radio" name="ans4" value="Shri. Narendra Modi"> Shri. Narendra Modi<br>
+  <input type="radio" name="ans4" value="Dr. Manmohan Singh"> Dr. Manmohan Singh<br>
+  <input type="radio" name="ans4" value="Mrs. Nirmala Sitharaman"> Mrs. Nirmala Sitharaman<br><br>
+
+  <p>Q5. Who's the GOAT?</p>
+  <input type="radio" name="ans5" value="1"> Krish 1<br>
+  <input type="radio" name="ans5" value="2"> Krish 2<br>
+  <input type="radio" name="ans5" value="3"> Krish 3<br><br>
+
+  <button type="button" onclick="score()">Submit</button>
+</form>
+
+<div class="palette" id="palette">
+  <div id="p1" class="unattempted">1</div>
+  <div id="p2" class="unattempted">2</div>
+  <div id="p3" class="unattempted">3</div>
+  <div id="p4" class="unattempted">4</div>
+  <div id="p5" class="unattempted">5</div>
+</div>
+
+<p id="result"></p>
+
+<script>
+  
+  let timeLeft = 20 * 60; // 20 minutes
+  const timerElement = document.getElementById("timer");
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      score();
+      alert("Time's up! Your test has been submitted.");
+    }
+    timeLeft--;
+  }
+
+  const timerInterval = setInterval(updateTimer, 1000);
+
+  
+  const paletteMap = {
+    ans1: "p1",
+    ans2: "p2",
+    ans3: "p3",
+    ans4: "p4",
+    ans5: "p5"
+  };
+
+  document.querySelectorAll("input[type=radio]").forEach(radio => {
+    radio.addEventListener("change", () => {
+      const name = radio.name;
+      const paletteBox = document.getElementById(paletteMap[name]);
+      paletteBox.className = "attempted";
+    });
+  });
+
+  
+  function score() {
+    let score = 0;
+    const answers = {
+      ans1: "New Delhi",
+      ans2: "Hockey",
+      ans3: "Bengal Tiger",
+      ans4: "Shri. Narendra Modi"
+    };
+
+    for (const key in paletteMap) {
+      const radio = document.querySelector(`input[name="${key}"]:checked`);
+      if (radio) {
+        if (answers[key] && radio.value === answers[key]) {
+          score++;
+        } else if (!answers[key]) {
+          score++; 
+        }
+      }
+    }
+
+    document.getElementById("result").innerText = `The score is: ${score} / 5`;
+    clearInterval(timerInterval);
+  }
+</script>
+
+</body>
+</html>
